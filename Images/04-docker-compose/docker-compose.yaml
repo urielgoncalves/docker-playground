@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  laravel:
+    build:
+      context: ./laravel
+      dockerfile: dockerfile.prod # dockerfile a ser utilizado
+    # neste caso o nome da imagem fica como referência de como ela deve se chamar
+    image: urielgoncalves/laravel:prod 
+    container_name: laravel
+    networks:
+      - laranet
+  nginx:
+    image: urielgoncalves/nginx:prod
+    container_name: nginx
+    networks:
+      - laranet
+    ports:
+      - "8080:80"
+
+networks:
+  laranet:
+    driver: bridge

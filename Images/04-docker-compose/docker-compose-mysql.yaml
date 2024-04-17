@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: node # Diretório com app NodeJs com um arquivo indes.js e dockerfile
+    container_name: app
+    volumes:
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+      - '3000:3000'
+    networks:
+      - node-network
+
+  db:
+    image: mysql:5.7 # esta imagem padrão já cria o banco de dados utilizando as variáveis de ambiente na primeira execução
+    # No caso do boot do mysql, precisamos executar um comando
+    command: --innodb-use-native-aio=0
+    container_name: db
+    # se por algum motivo o container parar, ele reinicia
+    restart: always
+    # Habilita o terminal para gerenciamento do banco de dados
+    tty: true
+    volumes:
+      # mapeia o diretório do container para um diretório do host para que os dados sejam mantidos ao recriar os containers
+      - ./mysql:/var/lib/mysql
+        # Envio de variáveis de ambiente
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - #MYSQL_USER=root - Criado por padrão
+    networks:
+      - node-network
+
+networks:
+  node-network:
+    driver: bridge
